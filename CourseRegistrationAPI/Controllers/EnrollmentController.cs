@@ -20,33 +20,61 @@ namespace CourseRegistrationAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var enrollments = await _enrollmentService.GetAllAsync();
-            return Ok(enrollments);
+            try
+            {
+                var enrollments = await _enrollmentService.GetAllAsync();
+                return Ok(enrollments);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
         }
 
         // GET: api/enrollments/user/1 - Hämtar alla kurser en användare är registrerad på
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetByUserId(int userId)
         {
-            var enrollments = await _enrollmentService.GetByUserIdAsync(userId);
-            return Ok(enrollments);
+            try
+            {
+                var enrollments = await _enrollmentService.GetByUserIdAsync(userId);
+                return Ok(enrollments);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
         }
 
         // POST: api/enrollments - Registrerar en användare på en kurs
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateEnrollmentDto dto)
         {
-            var enrollment = await _enrollmentService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetAll), enrollment);
+            try
+            {
+                var enrollment = await _enrollmentService.CreateAsync(dto);
+                return CreatedAtAction(nameof(GetAll), enrollment);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
         }
 
         // DELETE: api/enrollments/1 - Tar bort en registrering
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await _enrollmentService.DeleteAsync(id);
-            if (!result) return NotFound();
-            return NoContent();
+            try
+            {
+                var result = await _enrollmentService.DeleteAsync(id);
+                if (!result) return NotFound(new { error = $"Registrering med id {id} hittades inte" });
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
         }
     }
 }
